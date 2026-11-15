@@ -21,7 +21,7 @@ class Job(Base):
 
     job_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     job_title = Column(String(255), nullable=False)
-    job_description = Column(LONGTEXT, nullable=False)
+    job_description = Column(Text().with_variant(LONGTEXT, "mysql"), nullable=False)
     created_at = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"))
 
     screening_sessions = relationship(

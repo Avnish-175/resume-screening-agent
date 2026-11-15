@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 
 from .config import SUPPORTED_EXTENSIONS
 from .parsers import extract_text
-from .ranker import rank_resumes
+from .ranker import rank_resumes, get_model
 from .database import SessionLocal, test_database_connection
 from .models import Job, Candidate, ScreeningSession, ScreeningResult
 
@@ -69,16 +69,29 @@ def get_db() -> Generator[Session, None, None]:
 
 @app.get("/health")
 def health() -> dict:
-    """Check application health and database connectivity."""
+    """Check application health, live database connectivity, and Sentence Transformer readiness."""
     db_status = "connected"
     try:
         test_database_connection()
-    except Exception as exc:
-        db_status = f"unreachable: {exc}"
+    except Exception:
+        db_status = "disconnected"
+
+    # Verify model readiness safely
+    model_status = "ready"
+    try:
+        # Check if the model is cached/instantiated or can load without throwing
+        m = get_model()
+        if m is None:
+            model_status = "not_loaded"
+    except Exception:
+        model_status = "failed_to_initialize"
+
+    is_healthy = (db_status == "connected") and (model_status == "ready")
     return {
-        "status": "ok" if db_status == "connected" else "degraded",
+        "status": "ok" if is_healthy else "degraded",
         "database": db_status,
-        "model": "all-MiniLM-L6-v2",
+        "model_name": "all-MiniLM-L6-v2",
+        "model_status": model_status,
     }
 
 
@@ -166,17 +179,40 @@ async def screen(
             # Save candidates and their screening results
             for item in rankings:
                 profile = item["extracted_profile"]
+                email = profile.get("email")
+                normalized_email = email.strip().lower() if email else None
 
-                candidate = Candidate(
-                    candidate_name=item["candidate_name"],
-                    email=profile.get("email"),
-                    phone=profile.get("phone"),
-                    skills=json.dumps(profile["skills"]),
-                    education=profile["education"],
-                    experience=profile["experience"],
-                )
-                db.add(candidate)
-                db.flush()
+                candidate = None
+                # Reuse existing candidate record if a reliable normalized email exists
+                if normalized_email:
+                    candidate = (
+                        db.query(Candidate)
+                        .filter(Candidate.email == normalized_email)
+                        .first()
+                    )
+
+                if candidate:
+                    # Update skills/experience/education if current screening discovered new info
+                    if profile.get("skills"):
+                        candidate.skills = json.dumps(profile["skills"])
+                    if profile.get("education") != "Not explicitly detected":
+                        candidate.education = profile["education"]
+                    if profile.get("experience") != "Not explicitly detected":
+                        candidate.experience = profile["experience"]
+                    if profile.get("phone") and not candidate.phone:
+                        candidate.phone = profile["phone"]
+                else:
+                    # Create a new candidate record
+                    candidate = Candidate(
+                        candidate_name=item["candidate_name"],
+                        email=normalized_email,
+                        phone=profile.get("phone"),
+                        skills=json.dumps(profile["skills"]),
+                        education=profile["education"],
+                        experience=profile["experience"],
+                    )
+                    db.add(candidate)
+                    db.flush()
 
                 result = ScreeningResult(
                     session_id=screening_session.session_id,
@@ -189,7 +225,7 @@ async def screen(
                 )
                 db.add(result)
 
-            # Commit all database records together
+            # Commit all database records together in a single transaction
             db.commit()
 
             return JSONResponse({
@@ -210,12 +246,13 @@ async def screen(
         db.rollback()
         raise
 
-    except Exception as exc:
+    except Exception:
         db.rollback()
+        # Return a safe, sanitized client error without leaking internal DB/SQL exception traces
         raise HTTPException(
             422,
-            f"Could not screen resumes: {exc}"
-        ) from exc
+            "Could not complete resume screening. Please ensure the uploaded files are valid and readable."
+        )
 
 
 @app.get("/jobs")

@@ -46,11 +46,22 @@ def rank_resumes(job_description: str, resumes: list[tuple[str, str]]) -> list[d
             skill_score = 100.0 if profile["skills"] else 0.0
 
         # Experience score (0-100) based on ratio of candidate experience to JD requirement
-        candidate_years = profile.get("years_mentioned", 0.0)
-        if jd_years > 0:
-            experience_score = round(min(1.0, candidate_years / jd_years) * 100, 2)
+        candidate_years = profile.get("experience_years")
+        if candidate_years is not None:
+            if jd_years > 0:
+                experience_score = round(min(1.0, candidate_years / jd_years) * 100, 2)
+            else:
+                experience_score = 100.0
+            exp_status = f"{candidate_years:g}+ years of experience detected."
         else:
-            experience_score = 100.0 if candidate_years > 0 or profile["experience"] != "Not explicitly detected" else 50.0
+            # If no reliable experience duration could be extracted, adopt a neutral baseline (50.0)
+            # or neutral semantic-fallback to avoid falsely penalizing the candidate with zero.
+            if profile.get("experience") != "Not explicitly detected":
+                experience_score = 50.0
+                exp_status = "Experience section present (exact duration not explicitly quantified; neutral baseline applied)."
+            else:
+                experience_score = 50.0
+                exp_status = "Experience duration unavailable (neutral baseline 50.0 applied)."
 
         # Weighted final score: 60% semantic, 30% skills, 10% experience
         final_score = round(
@@ -63,8 +74,7 @@ def rank_resumes(job_description: str, resumes: list[tuple[str, str]]) -> list[d
             reasons.append("Matched skills: " + ", ".join(matched[:6]))
         else:
             reasons.append("No exact vocabulary skill matches; score is based on semantic content.")
-        if profile["years_mentioned"]:
-            reasons.append(f"Mentions {profile['years_mentioned']:g}+ years of experience.")
+        reasons.append(exp_status)
         if profile["projects"] != "Not explicitly detected":
             reasons.append("Has a detected projects section.")
 
