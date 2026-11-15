@@ -1,12 +1,34 @@
 """Transparent rule-based profile extraction used alongside semantic ranking."""
 import re
-from .config import SKILL_VOCABULARY
+from .config import SKILL_ALIASES, SKILL_VOCABULARY
+from .parsers import clean_text
 
 
 def _section(text: str, labels: list[str]) -> str:
     pattern = r"(?ims)^\s*(?:" + "|".join(map(re.escape, labels)) + r")\s*:?\s*$\n?(.*?)(?=^\s*[A-Z][A-Za-z /&-]{2,}\s*:?\s*$|\Z)"
     match = re.search(pattern, text)
-    return match.group(1).strip() if match else ""
+    return clean_text(match.group(1)) if match else ""
+
+
+def _extract_skills(text: str) -> list[str]:
+    """Extract canonical skills using exact word-boundary pattern matching with alias support.
+    
+    Prevents false-positive substring matches (e.g. 'go' in 'good', 'c' in 'cat', 'r' in 'read')
+    while properly capturing punctuated technical skills (C++, C#, .NET, CI/CD).
+    """
+    normalized = text.lower()
+    detected_canonical = set()
+
+    for canonical, aliases in SKILL_ALIASES.items():
+        for alias in aliases:
+            # Handle symbols like C++, C#, .NET
+            # Ensure boundary is checked against alphanumeric characters
+            pattern = r"(?<![A-Za-z0-9])" + re.escape(alias) + r"(?![A-Za-z0-9])"
+            if re.search(pattern, normalized):
+                detected_canonical.add(canonical)
+                break
+
+    return sorted(detected_canonical)
 
 
 def _extract_years_of_experience(text: str, experience_section: str) -> tuple[float | None, str]:
@@ -51,17 +73,17 @@ def _extract_years_of_experience(text: str, experience_section: str) -> tuple[fl
 
 
 def extract_profile(text: str) -> dict:
-    normalized = text.lower()
-    skills = sorted(skill for skill in SKILL_VOCABULARY if re.search(r"(?<!\w)" + re.escape(skill) + r"(?!\w)", normalized))
-    experience = _section(text, ["experience", "work experience", "professional experience", "employment"])
-    education = _section(text, ["education", "academic background"])
-    projects = _section(text, ["projects", "project experience", "selected projects"])
+    cleaned = clean_text(text)
+    skills = _extract_skills(cleaned)
+    experience = _section(cleaned, ["experience", "work experience", "professional experience", "employment"])
+    education = _section(cleaned, ["education", "academic background"])
+    projects = _section(cleaned, ["projects", "project experience", "selected projects"])
 
-    years, method = _extract_years_of_experience(text, experience)
+    years, method = _extract_years_of_experience(cleaned, experience)
 
     # Extract email and phone if present
-    email_match = re.search(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", text)
-    phone_match = re.search(r"(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b", text)
+    email_match = re.search(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", cleaned)
+    phone_match = re.search(r"(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b", cleaned)
 
     return {
         "skills": skills,

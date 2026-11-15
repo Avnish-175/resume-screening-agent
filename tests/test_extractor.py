@@ -18,7 +18,8 @@ Projects
 Built a semantic search service.
 """
     profile = extract_profile(text)
-    assert {"python", "nlp", "fastapi"}.issubset(profile["skills"])
+    # Check canonical mapping: 'nlp' maps to 'natural language processing'
+    assert {"python", "natural language processing", "fastapi"}.issubset(profile["skills"])
     assert profile["years_mentioned"] == 2.0
     assert profile["experience_years"] == 2.0
     assert profile["experience_years_detected"] is True
@@ -27,6 +28,39 @@ Built a semantic search service.
     assert "AI intern" in profile["experience"]
     assert "B.Tech" in profile["education"]
     assert "semantic search" in profile["projects"]
+
+
+def test_skill_aliases_and_acronyms() -> None:
+    text = """Alex Dev
+Skills:
+- ML, DL, and NLP
+- Working with LLMs, RAG pipelines, and LangChain
+- Docker, K8s, and AWS (EC2, S3)
+- C++, JavaScript, and React
+"""
+    profile = extract_profile(text)
+    expected = {
+        "machine learning",
+        "deep learning",
+        "natural language processing",
+        "large language models",
+        "retrieval-augmented generation",
+        "langchain",
+        "docker",
+        "kubernetes",
+        "aws",
+        "c++",
+        "javascript",
+        "react",
+    }
+    assert expected.issubset(profile["skills"])
+
+
+def test_skill_substring_isolation() -> None:
+    # Words like 'good', 'cat', 'reading', 'go' should not cause false positive matches
+    text = "Good communicator. Fond of cats and dogs. Reading technical books."
+    profile = extract_profile(text)
+    assert profile["skills"] == []
 
 
 def test_experience_extraction_edge_cases() -> None:

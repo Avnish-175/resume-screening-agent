@@ -60,14 +60,27 @@ flowchart TD
 - **Embedding Dimensionality**: 384 dimensions.
 - **Latency & Footprint**: Ultra-lightweight (~80MB), fast CPU inference with low memory overhead.
 - **Semantic Understanding**: Maps words and sentences describing equivalent engineering capabilities (e.g., "NLP classification" and "language modeling") to close regions in vector space, overcoming raw keyword matching limitations.
+- **Batch Processing**: Text embeddings are processed in batched operations (`batch_size=32`), avoiding per-sample inference overhead.
 
 ### Embeddings and Cosine Similarity
-1. **L2 Normalization**: Each generated vector $\vec{u}$ and $\vec{v}$ is normalized such that $\|\vec{u}\|_2 = 1$.
-2. **Cosine Similarity**:
-   $$\text{cosine\_similarity}(\vec{u}, \vec{v}) = \frac{\vec{u} \cdot \vec{v}}{\|\vec{u}\|_2 \|\vec{v}\|_2} = \vec{u} \cdot \vec{v}$$
+1. **L2 Normalization**: Each generated vector $\vec{u}$ and $\vec{v}$ is normalized such that $\|\vec{u}\|_2 = 1$:
+   $$\|\vec{u}\|_2 = \sqrt{\sum_{i=1}^{384} u_i^2} = 1$$
+2. **Cosine Similarity via Dot Product**:
+   Cosine similarity measures the cosine of the angle between two multi-dimensional vectors:
+   $$\text{cosine\_similarity}(\vec{u}, \vec{v}) = \frac{\vec{u} \cdot \vec{v}}{\|\vec{u}\|_2 \|\vec{v}\|_2}$$
+   Because all vectors produced by the model are L2-normalized ($\|\vec{u}\|_2 = 1$ and $\|\vec{v}\|_2 = 1$), the denominator equals $1$, simplifying the cosine similarity strictly to the Euclidean dot product:
+   $$\text{cosine\_similarity}(\vec{u}, \vec{v}) = \vec{u} \cdot \vec{v} = \sum_{i=1}^{384} u_i v_i$$
 3. **Score Scaling**:
    $$\text{semantic\_score} = \max(0, \text{cosine\_similarity}) \times 100$$
-4. **Final Weighted Score**:
+   *(Note: Semantic score measures vector geometric closeness, not a probabilistic hiring decision).*
+4. **Deterministic Skill Overlap & Aliasing**:
+   Skills are mapped to canonical representations (e.g. `ML` $\to$ `machine learning`, `NLP` $\to$ `natural language processing`, `LLM` $\to$ `large language models`, `FAISS` $\to$ `vector database`).
+   $$\text{skill\_score} = \frac{|\text{Matched Skills}|}{|\text{Required JD Skills}|} \times 100$$
+5. **Contextual Experience Ratio**:
+   Candidate experience is extracted strictly from employment context or dedicated experience sections (filtering out standalone calendar years). When quantifiable:
+   $$\text{experience\_score} = \min\left(1.0, \frac{\text{Candidate Years}}{\text{JD Target Years}}\right) \times 100$$
+   If experience duration is unquantified or unavailable, a neutral baseline of `50.0` is applied with transparent reasoning.
+6. **Final Weighted Score**:
    $$\text{final\_score} = (0.60 \times \text{semantic\_score}) + (0.30 \times \text{skill\_score}) + (0.10 \times \text{experience\_score})$$
 
 ---
