@@ -1,0 +1,3 @@
+Junior AI Research Associate
+
+We are seeking a Junior AI Research Associate to build practical AI agents. You will work with Python, NLP, machine learning, LLMs, FastAPI, SQL, and data analysis. Strong candidates have hands-on projects, Git, and familiarity with RAG or LangChain. A bachelor's degree in computer science, AI, or a related discipline is preferred. 0-3 years of experience is welcome.

@@ -1,0 +1,13 @@
+Meera Joshi
+
+Skills
+Python, NLP, LLM, RAG, LangChain, FastAPI, SQL, Git, data analysis
+
+Experience
+1 year as an AI Research Intern, reviewing model outputs and building prototypes.
+
+Education
+B.Tech in Computer Science, 2024
+
+Projects
+Developed a document question-answering assistant and benchmarked retrieval quality.

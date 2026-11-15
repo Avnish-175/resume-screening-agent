@@ -1,0 +1,13 @@
+Rohan Mehta
+
+Skills
+Python, machine learning, NLP, SQL, FastAPI, Git, pandas, numpy
+
+Experience
+1.5 years as a Data Science Intern supporting model experiments and API deployment.
+
+Education
+B.E. in Artificial Intelligence, 2025
+
+Projects
+Sentiment analysis dashboard and semantic document search using sentence embeddings.

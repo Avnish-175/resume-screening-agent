@@ -1,0 +1,13 @@
+Sneha Iyer
+
+Skills
+Python, NLP, machine learning, TensorFlow, SQL, pandas, Git
+
+Experience
+0.5 years as a Research Assistant in natural language processing.
+
+Education
+M.Sc. in Artificial Intelligence, 2025
+
+Projects
+Compared transformer embeddings for text classification and documented findings.

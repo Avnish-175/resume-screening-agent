@@ -1,0 +1,31 @@
+{
+  "job_description_file": "job_description.txt",
+  "total_candidates": 10,
+  "top_candidates": [
+    {
+      "rank": 1,
+      "candidate_name": "Aisha Khan",
+      "source_file": "aisha_khan.txt",
+      "similarity_score": 78.42,
+      "matched_skills": ["fastapi", "git", "langchain", "llm", "machine learning", "nlp"],
+      "reasoning": "Matched skills: fastapi, git, langchain, llm, machine learning, nlp. Mentions 2+ years of experience. Has a detected projects section."
+    },
+    {
+      "rank": 2,
+      "candidate_name": "Arjun Patel",
+      "source_file": "arjun_patel.txt",
+      "similarity_score": 76.85,
+      "matched_skills": ["fastapi", "git", "langchain", "llm", "nlp", "rag"],
+      "reasoning": "Matched skills: fastapi, git, langchain, llm, nlp, rag. Mentions 1+ years of experience. Has a detected projects section."
+    },
+    {
+      "rank": 3,
+      "candidate_name": "Meera Joshi",
+      "source_file": "meera_joshi.txt",
+      "similarity_score": 74.91,
+      "matched_skills": ["data analysis", "fastapi", "git", "langchain", "llm", "nlp"],
+      "reasoning": "Matched skills: data analysis, fastapi, git, langchain, llm, nlp. Mentions 1+ years of experience. Has a detected projects section."
+    }
+  ],
+  "note": "Illustrative output schema. Re-run the CLI to generate complete current-model rankings for all 10 included resumes."
+}

@@ -1,0 +1,13 @@
+Neha Verma
+
+Skills
+Python, statistics, pandas, numpy, SQL, data analysis, scikit-learn
+
+Experience
+1 year as a Business Analytics Intern.
+
+Education
+B.Tech in Data Science, 2025
+
+Projects
+Customer churn prediction and a SQL analytics report.

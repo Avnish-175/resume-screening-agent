@@ -1,0 +1,13 @@
+Karthik N
+
+Skills
+Java, Spring Boot, SQL, AWS, Docker, Git
+
+Experience
+3 years as a Backend Developer.
+
+Education
+B.Tech in Information Technology, 2022
+
+Projects
+Designed payment APIs and database migrations.

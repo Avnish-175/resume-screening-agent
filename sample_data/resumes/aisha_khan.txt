@@ -1,0 +1,13 @@
+Aisha Khan
+
+Skills
+Python, NLP, machine learning, FastAPI, SQL, pandas, scikit-learn, Git, LLM, RAG, LangChain
+
+Experience
+2 years as an AI Engineering Intern. Built and evaluated NLP classification pipelines and REST APIs.
+
+Education
+B.Tech in Computer Science, 2024
+
+Projects
+Built a RAG research assistant using LangChain, vector search, and FastAPI. Created an applicant-ranking prototype.

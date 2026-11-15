@@ -1,0 +1,13 @@
+Abdul Rahman
+
+Skills
+Python, machine learning, scikit-learn, pandas, numpy, statistics, Git
+
+Experience
+1 year as a Data Science Trainee.
+
+Education
+B.Sc. in Statistics, 2024
+
+Projects
+Built regression models and an exploratory data analysis notebook.

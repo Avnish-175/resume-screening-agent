@@ -1,0 +1,4 @@
+rank,candidate_name,source_file,similarity_score,matched_skills,missing_jd_skills,reasoning
+1,Aisha Khan,aisha_khan.txt,78.42,"fastapi, git, langchain, llm, machine learning, nlp","data analysis, sql","Matched skills: fastapi, git, langchain, llm, machine learning, nlp. Mentions 2+ years of experience. Has a detected projects section."
+2,Arjun Patel,arjun_patel.txt,76.85,"fastapi, git, langchain, llm, nlp, rag","data analysis, machine learning, sql","Matched skills: fastapi, git, langchain, llm, nlp, rag. Mentions 1+ years of experience. Has a detected projects section."
+3,Meera Joshi,meera_joshi.txt,74.91,"data analysis, fastapi, git, langchain, llm, nlp","machine learning, rag, sql","Matched skills: data analysis, fastapi, git, langchain, llm, nlp. Mentions 1+ years of experience. Has a detected projects section."

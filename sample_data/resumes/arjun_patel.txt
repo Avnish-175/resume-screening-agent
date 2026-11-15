@@ -1,0 +1,13 @@
+Arjun Patel
+
+Skills
+Python, LLM, RAG, LangChain, FastAPI, Docker, SQL, NLP, Git, FAISS
+
+Experience
+1 year as a Software Engineering Intern building LLM-powered internal tools.
+
+Education
+B.Sc. in Computer Science, 2025
+
+Projects
+Created a RAG chatbot with FAISS retrieval, evaluation prompts, and a FastAPI service.

@@ -1,0 +1,13 @@
+Vikram Rao
+
+Skills
+React, JavaScript, Python, FastAPI, Git, Docker
+
+Experience
+2 years as a Full Stack Developer.
+
+Education
+BCA, 2023
+
+Projects
+Built a recruitment portal with React and FastAPI.

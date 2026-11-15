@@ -1,0 +1,13 @@
+Priya Sharma
+
+Skills
+Python, deep learning, PyTorch, computer vision, data analysis, Git, AWS
+
+Experience
+2 years as a Machine Learning Intern working on image classification.
+
+Education
+B.Tech in Electronics and Communication, 2024
+
+Projects
+Trained a defect-detection system and published experiment results.
